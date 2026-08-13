@@ -257,9 +257,7 @@ class TestLogStartupSummary:
                 return list(call.kwargs.get("collectors", []))
         raise AssertionError("'  Enabled Collectors' line was not emitted")
 
-    def test_device_and_mtsensor_reported_enabled_by_default(
-        self, test_settings: Settings
-    ) -> None:
+    def test_device_and_mtsensor_reported_enabled_by_default(self, test_settings: Settings) -> None:
         """Device and MT Sensors must show as enabled by default."""
         collectors = self._enabled_collectors(test_settings)
 

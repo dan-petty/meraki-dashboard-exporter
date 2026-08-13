@@ -39,9 +39,7 @@ def _endpoint_group_calls(src_path: Path) -> list[ast.Call]:
                 continue
             calls = [item for item in statement.value.elts if isinstance(item, ast.Call)]
             if len(calls) != len(statement.value.elts) or not calls:
-                raise RuntimeError(
-                    "DeviceCollector.endpoint_groups has an unsupported shape"
-                )
+                raise RuntimeError("DeviceCollector.endpoint_groups has an unsupported shape")
             return calls
     return []
 
