@@ -96,7 +96,7 @@ class EndpointGroupName(StrEnum):
     MX_FIREWALL_CONFIG = "mx_firewall_config"
     MV_ANALYTICS = "mv_analytics"
     MG_UPLINK_STATUS = "mg_uplink_status"
-    # MEDIUM — NetworkHealthCollector
+    # Device & Sensor endpoint groups
     NH_CHANNEL_UTILIZATION = "nh_channel_utilization"
     NH_CONNECTION_STATS = "nh_connection_stats"
     NH_DATA_RATES = "nh_data_rates"
@@ -104,7 +104,6 @@ class EndpointGroupName(StrEnum):
     NH_FAILED_CONNECTIONS = "nh_failed_connections"
     NH_LATENCY_STATS = "nh_latency_stats"
     NH_AIR_MARSHAL = "nh_air_marshal"
-    # MEDIUM — OrganizationCollector
     ORG_AVAILABILITIES = "org_availabilities"
     ORG_AVAILABILITY_HISTORY = "org_availability_history"
     ORG_API_USAGE = "org_api_usage"
@@ -114,14 +113,12 @@ class EndpointGroupName(StrEnum):
     ORG_APP_USAGE = "org_app_usage"
     ORG_FIRMWARE = "org_firmware"
     ORG_LICENSES = "org_licenses"
-    # MEDIUM — Alerts / MT alerts / Clients
     ALERTS_ASSURANCE = "alerts_assurance"
     ALERTS_SENSOR_OVERVIEW = "alerts_sensor_overview"
     MT_SENSOR_ALERTS = "mt_sensor_alerts"
     CLIENTS_LIST = "clients_list"
     CLIENTS_APP_USAGE = "clients_app_usage"
     CLIENTS_SIGNAL_QUALITY = "clients_signal_quality"
-    # SLOW — ConfigCollector
     CONFIG_ORG = "config_org"
     # Ungated overhead (demand accounting only, gated=False)
     INVENTORY_WARM = "inventory_warm"

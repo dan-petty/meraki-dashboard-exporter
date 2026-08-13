@@ -156,8 +156,7 @@ class MTSensorAlertsCollector(MetricCollector):
         )
 
         # Shared per-org health tracker (F-169): when present, per-org collection is
-        # skipped for organizations currently in backoff. Gating consumer only -- the
-        # tracker is owned/updated by OrganizationCollector.
+        # skipped for organizations currently in backoff. Gating consumer only.
         self.org_health_tracker = org_health_tracker
 
     def _initialize_metrics(self) -> None:

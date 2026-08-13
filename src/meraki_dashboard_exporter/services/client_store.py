@@ -107,8 +107,7 @@ class ClientStore:
             if hostnames and client.ip:
                 hostname = hostnames.get(client.ip)
 
-            # Calculate the hostname that will be used in metrics
-            # This follows the same logic as ClientsCollector._determine_hostname
+            # Calculate the hostname
             calculated_hostname = hostname or client.description or client.ip or "unknown"
 
             # Create or update client data
@@ -198,8 +197,7 @@ class ClientStore:
         self._last_update[network_id] = time.time()
 
         # F-171: per-network line demoted to debug to avoid ~2,400 INFO lines/hour
-        # at ~100 networks; the aggregate collection summary is emitted at INFO by
-        # ClientsCollector instead.
+        # at ~100 networks.
         logger.debug(
             "Updated client data",
             network_id=network_id,

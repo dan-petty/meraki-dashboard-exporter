@@ -160,8 +160,8 @@ def create_client_labels(
     Numeric client series are ID-only (issue #533): ``mac``/``description``/
     ``hostname``/``ssid`` are deliberately omitted here, alongside the already-
     dropped ``org_name``/``network_name`` (issue #534). Those descriptive/
-    mutable fields live exclusively on the ``meraki_client_info`` join metric
-    (``collectors/clients.py``), keyed on ``client_id``; consumers re-attach
+    mutable fields live exclusively on the ``meraki_client_info`` join metric,
+    keyed on ``client_id``; consumers re-attach
     them via ``<numeric> * on(client_id) group_left(mac, description, hostname,
     ssid) meraki_client_info``.
 

@@ -248,7 +248,7 @@ signals before treating it as critical:
 - `/ready` - startup-only confirmation that the initial required collection completed. It does not
   trip on later failures; use `/health` and the scheduler success timestamps for ongoing health.
 - `meraki_exporter_org_collection_status{org_id="..."}` - per-organization gauge, `0` only when
-  *every* sub-collection failed for that org this cycle (see `OrganizationCollector`/`OrgHealthTracker`
+  *every* sub-collection failed for that org this cycle (see `OrgHealthTracker`
   in `core/org_health.py`).
 
 If `meraki_exporter_collector_errors_total` is climbing but `/ready` is `200` and
