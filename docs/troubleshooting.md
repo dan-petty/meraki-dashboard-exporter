@@ -109,8 +109,7 @@ that slower-cadence data is still empty.
 **This is expected behaviour, not a bug.** Per `app.py`'s `/ready` handler:
 
 > Returns 503 until every collector owning an enabled priority-<=3 endpoint group has completed a
-> successful run. Config-only collectors (all priority-4 groups, e.g. `ConfigCollector`) are
-> excluded so readiness probes aren't blocked waiting on their slower-cadence data.
+> successful run. Priority-4 groups are excluded so readiness probes aren't blocked waiting on their slower-cadence data.
 
 Endpoint-group priority (1 = up-ness/alerts, 2 = sensor, 3 = performance/health, 4 =
 config/inventory) is unrelated to a fixed schedule — group cadence is solved per-deployment by

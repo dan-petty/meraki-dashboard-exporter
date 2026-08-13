@@ -50,14 +50,10 @@ def calculate_collector_admission_limit(settings: Any) -> int:
 
 
 # Collectors that consult the shared OrgHealthTracker to skip per-org collection
-# for organizations currently in exponential backoff (F-169). Three of them also
-# *record* their per-org verdict into the tracker, each under its own failure
-# domain (#547): OrganizationCollector (SOURCE_ORGANIZATION), DeviceCollector
-# (SOURCE_DEVICE), and NetworkHealthCollector (SOURCE_NETWORK_HEALTH) -- so a
-# persistent failure in any one domain engages backoff even when the org
-# collector is healthy or disabled. ClientsCollector, AlertsCollector, and
-# MTSensorAlertsCollector remain gating consumers only (read should_collect,
-# never mutate the tracker).
+# for organizations currently in exponential backoff (F-169). DeviceCollector also
+# *records* its per-org verdict into the tracker under its failure domain (#547).
+# MTSensorAlertsCollector remains a gating consumer only (reads should_collect,
+# never mutates the tracker).
 _ORG_HEALTH_TRACKER_COLLECTORS = frozenset({
     "DeviceCollector",
     "MTSensorAlertsCollector",

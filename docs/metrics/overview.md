@@ -200,7 +200,7 @@ meraki_exporter_collector_api_calls_total{collector="DeviceCollector"} 145
 meraki_exporter_collector_errors_total{collector="SensorCollector"} 0
 
 # Timestamp of last successful collection
-meraki_exporter_collector_success_timestamp_seconds{collector="AlertsCollector"} 1705320000
+meraki_exporter_collector_success_timestamp_seconds{collector="DeviceCollector"} 1705320000
 ```
 
 ## Best Practices

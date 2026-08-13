@@ -538,8 +538,7 @@ class MetricCollector(ABC):
         """Return the endpoint groups this collector contributes to the scheduler.
 
         Defaults to the class-level ``endpoint_groups`` declaration. Override to
-        drop config-disabled groups (e.g. ``ClientsCollector`` when
-        ``clients.enabled`` is False) so they never enter the solver.
+        drop config-disabled groups so they never enter the solver.
 
         Returns
         -------

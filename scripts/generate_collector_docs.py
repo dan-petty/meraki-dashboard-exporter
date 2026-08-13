@@ -12,9 +12,7 @@ import ast
 from pathlib import Path
 from typing import Any
 
-COLLECTOR_NOTES = {
-    "ClientsCollector": "Requires MERAKI_EXPORTER_CLIENTS__ENABLED=true",
-}
+COLLECTOR_NOTES: dict[str, str] = {}
 
 
 class CollectorVisitor(ast.NodeVisitor):
@@ -351,24 +349,7 @@ def generate_markdown(collectors: list[dict[str, Any]]) -> str:
     device_subs = [
         c for c in collectors if "/collectors/devices/" in c["file"] and not c.get("registered")
     ]
-    network_subs = [
-        c
-        for c in collectors
-        if "/collectors/network_health_collectors/" in c["file"] and not c.get("registered")
-    ]
-    org_subs = [
-        c
-        for c in collectors
-        if "/collectors/organization_collectors/" in c["file"] and not c.get("registered")
-    ]
-    other_subs = [
-        c
-        for c in collectors
-        if not c.get("registered")
-        and c not in device_subs
-        and c not in network_subs
-        and c not in org_subs
-    ]
+    other_subs = [c for c in collectors if not c.get("registered") and c not in device_subs]
 
     def add_subcollector_section(title: str, items: list[dict[str, Any]]) -> None:
         if not items:
@@ -381,8 +362,6 @@ def generate_markdown(collectors: list[dict[str, Any]]) -> str:
         lines.append("")
 
     add_subcollector_section("Device Sub-collectors", device_subs)
-    add_subcollector_section("Network Health Sub-collectors", network_subs)
-    add_subcollector_section("Organization Sub-collectors", org_subs)
     add_subcollector_section("Other Sub-collectors", other_subs)
 
     lines.append("## Notes")

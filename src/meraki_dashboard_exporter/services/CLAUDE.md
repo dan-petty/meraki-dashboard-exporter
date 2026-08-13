@@ -11,16 +11,16 @@ Supporting services for the Meraki Dashboard Exporter - shared inventory caching
 
 <file_map>
 ## SERVICES
-- `inventory.py` - `OrganizationInventory`: TTL-cached org/network/device/availability/license/login-security data, shared across all collectors via `CollectorManager`.
-- `client_store.py` - `ClientStore`: in-memory per-network client cache backing the `/clients` page and `ClientsCollector`.
-- `dns_resolver.py` - `DNSResolver`: reverse-DNS hostname lookups for client IPs, with its own TTL cache, used by `ClientsCollector` and the `/clients` page + `POST /api/clients/clear-dns-cache`.
+- `inventory.py` - `OrganizationInventory`: TTL-cached org/network/device/availability data, shared across all collectors via `CollectorManager`.
+- `client_store.py` - `ClientStore`: in-memory per-network client cache backing the `/clients` page.
+- `dns_resolver.py` - `DNSResolver`: reverse-DNS hostname lookups for client IPs, with its own TTL cache, used by the `/clients` page + `POST /api/clients/clear-dns-cache`.
 - `status.py` - `StatusService` + `StatusSnapshot`/`CollectorStatus`/`ApiHealthStatus`/`DataFreshnessStatus`/`OrgHealthStatus`/`SystemStatus` dataclasses backing the `/status` health dashboard (`app.py`'s `status()` route, HTML or `?format=json`).
 </file_map>
 
 <paved_path>
 ## INVENTORY CACHE CONTRACT
 
-TTLs (constants on `OrganizationInventory`, seconds): `TTL_MEDIUM=900` (the general cache TTL, fixed for every reader — there is no per-collector TTL wiring; a prior `set_ttl_for_tier` method and `TTL_FAST`/`TTL_SLOW` were removed with the tier system, #631), `TTL_AVAILABILITY=120` (device availabilities are more dynamic so they get their own shorter TTL regardless of the general `_ttl`), `TTL_LICENSE=1800`. All TTLs get ±10% jitter in `_is_expired()` to avoid thundering-herd refreshes.
+TTLs (constants on `OrganizationInventory`, seconds): `TTL_MEDIUM=900` (the general cache TTL, fixed for every reader — there is no per-collector TTL wiring; a prior `set_ttl_for_tier` method and `TTL_FAST`/`TTL_SLOW` were removed with the tier system, #631), `TTL_AVAILABILITY=120` (device availabilities are more dynamic so they get their own shorter TTL regardless of the general `_ttl`). All TTLs get ±10% jitter in `_is_expired()` to avoid thundering-herd refreshes.
 
 ```python
 # Standard read path — filter applied automatically
@@ -49,8 +49,5 @@ before the first collection cycle so it hits cache instead of missing on startup
 changes per-client via `track_client()` (invalidating the old IP's cache entry on change),
 and resolves with a concurrency cap of 5 (`asyncio.Semaphore(5)`). `ClientStore.update_clients()`
 takes the resolved `hostnames: dict[str, str | None]` (by IP) and computes
-`calculatedHostname = hostname or description or ip or "unknown"` per client — this must
-match `ClientsCollector._determine_hostname`'s logic (see the inline comment in
-`client_store.py::update_clients`) or client-facing hostnames will disagree between the
-`/clients` page and the collector's own metric labels.
+`calculatedHostname = hostname or description or ip or "unknown"` per client or client-facing hostnames for the `/clients` page.
 </paved_path>

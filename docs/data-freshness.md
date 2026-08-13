@@ -91,13 +91,7 @@ upstream outage.
 | --- | --- | --- |
 | `MTSensorCollector` | ~60s | Latest MT environmental sensor readings (temperature, humidity, CO2, water detection, etc.) and sensor-to-gateway connection status |
 | `DeviceCollector` | ~300s | Per-device inventory metrics, including `meraki_device_up` / `meraki_device_status_info`, memory, CPU, uptime, and per-device-type detail (ports, radios, PSU, etc.) |
-| `NetworkHealthCollector` | ~300s | Bluetooth clients, wireless connection stats, data rates, RF health, SSID performance |
-| `OrganizationCollector` | ~300s | Org-level metrics: API usage, licensing, client overview, and related org aggregates |
-| `AlertsCollector` | ~300s | Active Meraki Dashboard assurance alerts |
-| `ClientsCollector` | ~300s | Optional client-inventory ID-only metrics (`collectors.clients_enabled`, off by default) |
 | `MTSensorAlertsCollector` | ~300s | MT sensor threshold alerts |
-| `ConfigCollector` | ~900s | Configuration/security data (SNMP, org security posture, etc.) |
-| `InsightCollector` | ~900s+ | Optional Meraki Insight WAN/application health (license-gated, off by default); its monitored-application-list group floors even higher (3600s) |
 
 ## Meraki-side detection lag
 

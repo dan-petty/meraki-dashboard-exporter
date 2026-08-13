@@ -1,7 +1,7 @@
 # CLAUDE.md
 
 <system_context>
-Meraki Dashboard Exporter - A production-ready Prometheus exporter that collects metrics from Cisco Meraki Dashboard API and exposes them for monitoring. Supports OpenTelemetry **traces for self-observability** plus an optional **structured data-log** channel for per-entity product data (both not a metrics mirror — Prometheus `/metrics` remains the sole metrics surface; see `core/otel_tracing.py`, `core/otel_data_logs.py`, and `docs/observability/otel.md`) and includes comprehensive collectors for devices, networks, organizations, and sensor data.
+Meraki Dashboard Exporter - A production-ready Prometheus exporter that collects device Prometheus metrics from Cisco Meraki Dashboard API (MS switches, MR wireless APs, MX security appliances, MT sensors, MG cellular gateways, MV cameras) and exposes them for monitoring. Supports OpenTelemetry **traces for self-observability** plus an optional **structured data-log** channel for per-entity product data (both not a metrics mirror — Prometheus `/metrics` remains the sole metrics surface; see `core/otel_tracing.py`, `core/otel_data_logs.py`, and `docs/observability/otel.md`).
 </system_context>
 
 <critical_notes>
@@ -11,7 +11,7 @@ Meraki Dashboard Exporter - A production-ready Prometheus exporter that collects
 - **Memory**: Be mindful of API rate limits and implement proper error handling
 - **Use parallel tasks/agents** when suitable use the parallel tasks and agents available to you
 - **Git commands are allowed** — committing and pushing (including straight to `main`) is fine when the task calls for it
-- **Network fetches go through inventory**: All collectors must use `OrganizationInventory.get_networks(org_id)` so the configured `NetworkFilter` is enforced uniformly. Direct `getOrganizationNetworks` SDK calls in collectors are forbidden. `DiscoveryService` (`core/discovery.py`) deliberately bypasses the filter for audit purposes (the only *unfiltered* bypass). Two other sanctioned direct calls exist, both filtered fallbacks used only when `self.inventory` is `None`, each manually reapplying `NetworkFilter` itself: `AlertsCollector._fetch_networks_direct` (`collectors/alerts.py`) and `APIHelper._fetch_networks_direct` (`core/api_helpers.py`, reached via `APIHelper.get_organization_networks`).
+- **Network fetches go through inventory**: All collectors must use `OrganizationInventory.get_networks(org_id)` so the configured `NetworkFilter` is enforced uniformly. Direct `getOrganizationNetworks` SDK calls in collectors are forbidden. `DiscoveryService` (`core/discovery.py`) deliberately bypasses the filter for audit purposes (the only *unfiltered* bypass). Sanctioned direct calls exist only in `APIHelper._fetch_networks_direct` (`core/api_helpers.py`, reached via `APIHelper.get_organization_networks`) as an inventory-unavailable fallback manually reapplying `NetworkFilter`.
 - **Wrap fetchers with `validate_response_format`**: New API fetchers that may receive the SDK exhausted-retry error shape must use `core.error_handling.validate_response_format` to normalize the response.
 </critical_notes>
 
@@ -41,8 +41,6 @@ Meraki Dashboard Exporter - A production-ready Prometheus exporter that collects
 - **Core Infrastructure**: Logging, config, metrics, error handling -> `src/meraki_dashboard_exporter/core/CLAUDE.md`
 - **Collector Pattern**: Auto-registration, endpoint groups/scheduler, base classes -> `src/meraki_dashboard_exporter/collectors/CLAUDE.md`
 - **Device-Specific**: MR, MS, MX, MT, MG, MV collectors -> `src/meraki_dashboard_exporter/collectors/devices/CLAUDE.md` (MR's own subpackage has a further nested `devices/mr/CLAUDE.md`)
-- **Network Health**: Bluetooth, connection stats, data rates, RF health, SSID performance -> `src/meraki_dashboard_exporter/collectors/network_health_collectors/CLAUDE.md`
-- **Organization-Level**: API usage, licensing, client overview -> `src/meraki_dashboard_exporter/collectors/organization_collectors/CLAUDE.md`
 - **API Integration**: Async wrapper for Meraki SDK -> `src/meraki_dashboard_exporter/api/CLAUDE.md`
 - **Services**: Inventory cache (NetworkFilter enforcement), client store, DNS resolver, status -> `src/meraki_dashboard_exporter/services/CLAUDE.md`
 - **Testing**: Factories, mocks, assertions -> `tests/CLAUDE.md`
@@ -99,10 +97,10 @@ Meraki Dashboard Exporter - A production-ready Prometheus exporter that collects
 - **NEVER work in subdirectories without consulting their `CLAUDE.md`**
 - **NEVER use unbounded parallelism** - always use ManagedTaskGroup with max_concurrency
 - **NEVER bypass inventory service** - use cached data when available
-- **NEVER call `getOrganizationNetworks` directly from a collector** - go through `OrganizationInventory.get_networks(org_id)` so `NetworkFilter` is enforced. Only `core/discovery.py::DiscoveryService` (audit logging, unfiltered), `collectors/alerts.py::AlertsCollector._fetch_networks_direct`, and `core/api_helpers.py::APIHelper._fetch_networks_direct` (both inventory-unavailable fallbacks that reapply `NetworkFilter` manually) are permitted to bypass.
+- **NEVER call `getOrganizationNetworks` directly from a collector** - go through `OrganizationInventory.get_networks(org_id)` so `NetworkFilter` is enforced. Only `core/discovery.py::DiscoveryService` (audit logging, unfiltered) and `core/api_helpers.py::APIHelper._fetch_networks_direct` (inventory-unavailable fallback that reapplies `NetworkFilter` manually) are permitted to bypass.
 - **NEVER forget metric tracking** - use `parent._set_metric()` for automatic expiration
 - **Grafana dashboards + alert/recording rules live in `grafana/`** (v2 schema, authored via `gcx`). They are no longer frozen — the dedicated rebuild landed 2026-07. When a metric/label name changes, update the affected `grafana/dashboards/*.json` queries and re-verify against a live scrape (see `grafana/CLAUDE.md`).
-- **NEVER add a new client-keyed (or otherwise unbounded per-entity) labelled Prometheus metric** — metrics carry bounded, fleet-shaped aggregates (org/network/device serial/SSID number/port/band, or top-N bounded by construction); a new per-client/per-entity signal (client ID/MAC, per-delivery row, anything that fans out per-request) routes to the OTel data-log emitter (`core/otel_data_logs.py`, see `docs/observability/otel.md#data-logs-vs-metrics-the-boundary-rule`) instead. The existing opt-in `collectors/clients.py` ID-only numeric series + `meraki_client_info` join (#533) is grandfathered and unaffected by this rule.
+- **NEVER add a new client-keyed (or otherwise unbounded per-entity) labelled Prometheus metric** — metrics carry bounded, fleet-shaped aggregates (org/network/device serial/SSID number/port/band, or top-N bounded by construction); a new per-client/per-entity signal (client ID/MAC, per-delivery row, anything that fans out per-request) routes to the OTel data-log emitter (`core/otel_data_logs.py`, see `docs/observability/otel.md#data-logs-vs-metrics-the-boundary-rule`) instead.
 </fatal_implications>
 
 <roadmap_workflow>

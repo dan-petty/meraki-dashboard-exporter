@@ -606,8 +606,7 @@ class CollectorMetricName(StrEnum):
     CLIENTS_OVER_CAP = "meraki_exporter_clients_over_cap"
 
     # DNS resolver + client-store instrumentation (#319). Exporter self-metrics
-    # (`meraki_exporter_client_*`), owned/emitted by
-    # ClientsCollector._update_cache_metrics. Global singletons -- no labels.
+    # (`meraki_exporter_client_*`). Global singletons -- no labels.
     # DNS_CACHE_TOTAL / CLIENT_STORE_TOTAL are pre-1.0 Gauges carrying a legacy
     # `_total` name (kept as-is; renaming them is a separate breaking change).
     CLIENT_DNS_CACHE_TOTAL = "meraki_exporter_client_dns_cache_total"
