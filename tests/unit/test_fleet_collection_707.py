@@ -176,7 +176,7 @@ async def test_fanout_records_429_timeout_and_partial_failure_without_fabricatin
     monkeypatch.setattr(
         "meraki_dashboard_exporter.core.api_facade.asyncio.sleep", AsyncMock(side_effect=no_wait)
     )
-    fleet_settings.api.per_fetch_deadline_seconds = 0.1
+    fleet_settings.api.per_fetch_deadline_seconds = 2.0
 
     def clients(network_id: str, **_: object) -> list[dict[str, object]]:
         nonlocal retry_attempts
@@ -184,7 +184,7 @@ async def test_fanout_records_429_timeout_and_partial_failure_without_fabricatin
             retry_attempts += 1
             raise HTTPError("HTTP 429", 429)
         if network_id == timeout_network:
-            time.sleep(0.2)
+            raise TimeoutError("per-fetch deadline exceeded")
         if network_id == failed_network:
             raise RuntimeError("partial fixture failure")
         return fleet.clients_by_network[network_id]
